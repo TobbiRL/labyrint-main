@@ -5,6 +5,7 @@ import * as CONST from "./constants.mjs";
 
 
 const startingLevel = CONST.START_LEVEL_ID;
+const secondLevel = CONST.SECOND_LEVEL_ID;
 const levels = loadLevelListings();
 
 function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
@@ -119,6 +120,15 @@ class Labyrinth {
             isDirty = true;
         } else {
             direction *= -1;
+        }
+
+        if (LEVEL_CHANGE.includes(level[tRow][tcol])) {
+            
+            let door1 = level[tRow][tcol];
+            if (door1 == DOOR) {
+                levelData = readMapFile(levels[secondLevel]);
+                 level = levelData;
+            }
         }
     }
 
