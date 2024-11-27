@@ -46,6 +46,7 @@ const HERO = "H";
 const LOOT = "$";
 const DOOR = "D";
 const DOOR2 = "d";
+const TELEPORTER = "♨︎".trim();
 
 let direction = -1;
 
@@ -54,6 +55,8 @@ let items = [];
 const THINGS = [LOOT, EMPTY];
 
 const LEVEL_CHANGE = [DOOR, DOOR2];
+
+const TRANSPORTATION = [TELEPORTER];
 
 let eventText = "";
 
@@ -135,7 +138,7 @@ class Labyrinth {
             else if (doorSymbol == DOOR2) {
                 levelData = readMapFile(levels[thirdLevel]);
                 level = levelData;
-            } 
+            }
             
             playerPos.row = null;
             drow = 0;
@@ -159,7 +162,16 @@ class Labyrinth {
             
             isDirty = true;
         }
+
+        if (TRANSPORTATION.includes(level[tRow][tcol])) {
+            level[playerPos.row][playerPos.col] = EMPTY;
+            
+
+
+            isDirty = true;
+        }
     }
+
 
     draw() {
 
