@@ -124,13 +124,29 @@ class Labyrinth {
 
         if (LEVEL_CHANGE.includes(level[tRow][tcol])) {
             
+            
+
             let doorSymbol = level[tRow][tcol];
             if (doorSymbol == DOOR) {
                 levelData = readMapFile(levels[secondLevel]);
                 level = levelData;
                 
             } 
-
+            
+            if (playerPos.row == null) {
+                for (let row = 0; row < level.length; row++) {
+                    for (let col = 0; col < level[row].length; col++) {
+                        if (level[row][col] == "H") {
+                            playerPos.row = row;
+                            playerPos.col = col;
+                            break;
+                        }
+                    }
+                    if (playerPos.row != undefined) {
+                        break;
+                    }
+                }
+            }
 
             
             isDirty = true;
