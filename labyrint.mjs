@@ -48,7 +48,7 @@ let direction = -1;
 
 let items = [];
 
-const THINGS = [LOOT, EMPTY];
+const THINGS = [LOOT, EMPTY, DOOR];
 
 let eventText = "";
 
