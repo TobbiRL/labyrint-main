@@ -63,7 +63,7 @@ let eventText = "";
 const HP_MAX = 10;
 
 const playerStats = {
-    hp: 8,
+    hp: 10,
     cash: 0
 }
 
@@ -74,7 +74,7 @@ class Labyrinth {
         if (playerPos.row == null) {
             for (let row = 0; row < level.length; row++) {
                 for (let col = 0; col < level[row].length; col++) {
-                    if (level[row][col] == "H") {
+                    if (level[row][col] == HERO) {
                         playerPos.row = row;
                         playerPos.col = col;
                         break;
@@ -147,7 +147,7 @@ class Labyrinth {
             if (playerPos.row == null) {
                 for (let row = 0; row < level.length; row++) {
                     for (let col = 0; col < level[row].length; col++) {
-                        if (level[row][col] == "H") {
+                        if (level[row][col] == HERO) {
                             playerPos.row = row;
                             playerPos.col = col;
                             break;
