@@ -6,6 +6,7 @@ import * as CONST from "./constants.mjs";
 
 const startingLevel = CONST.START_LEVEL_ID;
 const secondLevel = CONST.SECOND_LEVEL_ID;
+const thirdLevel = CONST.THIRD_LEVEL_ID;
 const levels = loadLevelListings();
 
 function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
@@ -44,6 +45,7 @@ const EMPTY = " ";
 const HERO = "H";
 const LOOT = "$";
 const DOOR = "D";
+const DOOR2 = "d";
 
 let direction = -1;
 
@@ -51,7 +53,7 @@ let items = [];
 
 const THINGS = [LOOT, EMPTY];
 
-const LEVEL_CHANGE = [DOOR];
+const LEVEL_CHANGE = [DOOR, DOOR2];
 
 let eventText = "";
 
@@ -129,6 +131,10 @@ class Labyrinth {
                 levelData = readMapFile(levels[secondLevel]);
                 level = levelData;
                 
+            } 
+            else if (doorSymbol == DOOR2) {
+                levelData = readMapFile(levels[thirdLevel]);
+                level = levelData;
             } 
             
             playerPos.row = null;
