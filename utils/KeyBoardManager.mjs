@@ -44,9 +44,7 @@ const KeyBoardManager = {
     isEnterPressed: () => {
         return readKeyState(KEY_ID.return);
     },
-
     isDownPressed: () => {
-
         return readKeyState(KEY_ID.down);
     },
     isUpPressed: () => {
@@ -61,8 +59,6 @@ const KeyBoardManager = {
     isRotatePressed: () => {
         return readKeyState(KEY_ID.r);
     }
-
 }
-
 
 export default KeyBoardManager;
