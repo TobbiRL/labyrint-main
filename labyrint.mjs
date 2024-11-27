@@ -128,6 +128,9 @@ class Labyrinth {
             if (door1 == DOOR) {
                 levelData = readMapFile(levels[secondLevel]);
                  level = levelData;
+
+
+                 isDirty = true;
             }
         }
     }
