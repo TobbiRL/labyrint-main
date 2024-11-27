@@ -127,11 +127,13 @@ class Labyrinth {
             let doorSymbol = level[tRow][tcol];
             if (doorSymbol == DOOR) {
                 levelData = readMapFile(levels[secondLevel]);
-                 level = levelData;
+                level = levelData;
+                
+            } 
 
 
-               
-            } isDirty = true;
+            
+            isDirty = true;
         }
     }
 
