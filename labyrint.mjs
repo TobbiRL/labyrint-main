@@ -164,31 +164,34 @@ class Labyrinth {
         }
 
         if (TRANSPORTATION.includes(level[tRow][tcol])) {
-            level[playerPos.row][playerPos.col] = EMPTY;
+            let transporter = level[tRow][tcol];
+            if (transporter == TELEPORTER) {
+                level[playerPos.row][playerPos.col] = EMPTY;
+                level[tRow][tcol] = EMPTY;
+                playerPos.row = null;
+                
+                if (playerPos.row == null) {
+                    for (let row = 0; row < level.length; row++) {
+                        for (let col = 0; col < level[row].length; col++) {
+                            if (level[row][col] == TELEPORTER) {
+                                
+                                level[row][col] = HERO;
+                                playerPos.row = row;
+                                playerPos.col = col;
 
-            playerPos.row = null;
-            drow = 0;
-            dcol = 0;
-            if (playerPos.row == null) {
-                for (let row = 0; row < level.length; row++) {
-                    for (let col = 0; col < level[row].length; col++) {
-                        if (level[row][col] == TELEPORTER) {
-                            playerPos.row = row;
-                            playerPos.col = col;
-
-                            level[row][col] = HERO;
-
+                                break;
+                            }
+                        }
+                        if (playerPos.row != undefined) {
                             break;
                         }
                     }
-                    if (playerPos.row != undefined) {
-                        break;
-                    }
-                }
+                } 
             }
+            
+            isDirty = true
 
-
-            isDirty = true;
+        
         }
     }
 
