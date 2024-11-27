@@ -23,7 +23,7 @@ function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
     return levels;
 }
 
-let levelData = readMapFile(levels[secondLevel]);
+let levelData = readMapFile(levels[startingLevel]);
 let level = levelData;
 
 let pallet = {
@@ -44,8 +44,12 @@ let playerPos = {
 const EMPTY = " ";
 const HERO = "H";
 const LOOT = "$";
+
 const DOOR = "D";
 const DOOR2 = "d";
+const DOOR3 = "G";
+const DOOR4 = "g";
+
 const TELEPORTER = "T";
 
 let direction = -1;
@@ -133,10 +137,17 @@ class Labyrinth {
             if (doorSymbol == DOOR) {
                 levelData = readMapFile(levels[secondLevel]);
                 level = levelData;
-                
             } 
             else if (doorSymbol == DOOR2) {
+                levelData = readMapFile(levels[startingLevel]);
+                level = levelData;
+            }
+            else if (doorSymbol == DOOR3) {
                 levelData = readMapFile(levels[thirdLevel]);
+                level = levelData;
+            }
+            else if (doorSymbol == DOOR4) {
+                levelData = readMapFile(levels[secondLevel]);
                 level = levelData;
             }
             
@@ -158,7 +169,7 @@ class Labyrinth {
                     }
                 }
             }
-
+            eventText = `You entered a door!`;
             
             isDirty = true;
         }
@@ -191,7 +202,7 @@ class Labyrinth {
             
             isDirty = true
 
-        
+            eventText = `*Teleporter noise*`;
         }
     }
 
