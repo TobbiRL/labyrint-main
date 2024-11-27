@@ -124,8 +124,8 @@ class Labyrinth {
 
         if (LEVEL_CHANGE.includes(level[tRow][tcol])) {
             
-            let door1 = level[tRow][tcol];
-            if (door1 == DOOR) {
+            let doorSymbol = level[tRow][tcol];
+            if (doorSymbol == DOOR) {
                 levelData = readMapFile(levels[secondLevel]);
                  level = levelData;
 
