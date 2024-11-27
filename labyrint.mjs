@@ -165,7 +165,24 @@ class Labyrinth {
 
         if (TRANSPORTATION.includes(level[tRow][tcol])) {
             level[playerPos.row][playerPos.col] = EMPTY;
-            
+
+            playerPos.row = null;
+            drow = 0;
+            dcol = 0;
+            if (playerPos.row == null) {
+                for (let row = 0; row < level.length; row++) {
+                    for (let col = 0; col < level[row].length; col++) {
+                        if (level[row][col] == TELEPORTER) {
+                            playerPos.row = row;
+                            playerPos.col = col;
+                            break;
+                        }
+                    }
+                    if (playerPos.row != undefined) {
+                        break;
+                    }
+                }
+            }
 
 
             isDirty = true;
