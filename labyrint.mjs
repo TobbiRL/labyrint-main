@@ -29,7 +29,6 @@ let pallet = {
     "H": ANSI.COLOR.RED,
     "$": ANSI.COLOR.YELLOW,
     "B": ANSI.COLOR.GREEN,
-    "D": ANSI.COLOR.BLACK,
 }
 
 
@@ -42,7 +41,8 @@ let playerPos = {
 
 const EMPTY = " ";
 const HERO = "H";
-const LOOT = "$"
+const LOOT = "$";
+const DOOR = "D";
 
 let direction = -1;
 
