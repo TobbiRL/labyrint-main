@@ -124,8 +124,6 @@ class Labyrinth {
 
         if (LEVEL_CHANGE.includes(level[tRow][tcol])) {
             
-            
-
             let doorSymbol = level[tRow][tcol];
             if (doorSymbol == DOOR) {
                 levelData = readMapFile(levels[secondLevel]);
@@ -133,6 +131,10 @@ class Labyrinth {
                 
             } 
             
+            playerPos.row = null;
+            drow = 0;
+            dcol = 0; 
+
             if (playerPos.row == null) {
                 for (let row = 0; row < level.length; row++) {
                     for (let col = 0; col < level[row].length; col++) {
