@@ -139,18 +139,22 @@ class Labyrinth {
             if (doorSymbol == DOOR) {
                 levelData = readMapFile(levels[secondLevel]);
                 level = levelData;
+                eventText = `You entered a door!`;
             } 
             else if (doorSymbol == DOOR2) {
                 levelData = readMapFile(levels[startingLevelReEntry]);
                 level = levelData;
+                eventText = `You entered a door!`;
             }
             else if (doorSymbol == DOOR3) {
                 levelData = readMapFile(levels[thirdLevel]);
                 level = levelData;
+                eventText = `You entered a gate!`;
             }
             else if (doorSymbol == DOOR4) {
                 levelData = readMapFile(levels[secondLevelReEntry]);
                 level = levelData;
+                eventText = `You entered a gate!`;
             }
             
             playerPos.row = null;
@@ -171,7 +175,6 @@ class Labyrinth {
                     }
                 }
             }
-            eventText = `You entered a door!`;
             
             isDirty = true;
         }
