@@ -23,7 +23,7 @@ function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
     return levels;
 }
 
-let levelData = readMapFile(levels[startingLevel]);
+let levelData = readMapFile(levels[secondLevel]);
 let level = levelData;
 
 let pallet = {
@@ -46,7 +46,7 @@ const HERO = "H";
 const LOOT = "$";
 const DOOR = "D";
 const DOOR2 = "d";
-const TELEPORTER = "♨︎".trim();
+const TELEPORTER = "T";
 
 let direction = -1;
 
@@ -175,6 +175,9 @@ class Labyrinth {
                         if (level[row][col] == TELEPORTER) {
                             playerPos.row = row;
                             playerPos.col = col;
+
+                            level[row][col] = HERO;
+
                             break;
                         }
                     }
