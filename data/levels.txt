@@ -1,3 +1,5 @@
 start:map1.txt
+startRE:map1ReEnter.txt
 aSharpPlace:sharp.txt
+aSharpPlaceRE:sharpReEnter.txt
 thirdLevel:map3.txt

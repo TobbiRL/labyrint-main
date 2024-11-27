@@ -5,7 +5,9 @@ import * as CONST from "./constants.mjs";
 
 
 const startingLevel = CONST.START_LEVEL_ID;
+const startingLevelReEntry = CONST.START_LEVEL_RE_ENTRY_ID;
 const secondLevel = CONST.SECOND_LEVEL_ID;
+const secondLevelReEntry = CONST.SECOND_LEVEL_RE_ENTRY_ID;
 const thirdLevel = CONST.THIRD_LEVEL_ID;
 const levels = loadLevelListings();
 
@@ -58,7 +60,7 @@ let items = [];
 
 const THINGS = [LOOT, EMPTY];
 
-const LEVEL_CHANGE = [DOOR, DOOR2];
+const LEVEL_CHANGE = [DOOR, DOOR2, DOOR3, DOOR4];
 
 const TRANSPORTATION = [TELEPORTER];
 
@@ -139,7 +141,7 @@ class Labyrinth {
                 level = levelData;
             } 
             else if (doorSymbol == DOOR2) {
-                levelData = readMapFile(levels[startingLevel]);
+                levelData = readMapFile(levels[startingLevelReEntry]);
                 level = levelData;
             }
             else if (doorSymbol == DOOR3) {
@@ -147,7 +149,7 @@ class Labyrinth {
                 level = levelData;
             }
             else if (doorSymbol == DOOR4) {
-                levelData = readMapFile(levels[secondLevel]);
+                levelData = readMapFile(levels[secondLevelReEntry]);
                 level = levelData;
             }
             
