@@ -130,8 +130,8 @@ class Labyrinth {
                  level = levelData;
 
 
-                 isDirty = true;
-            }
+               
+            } isDirty = true;
         }
     }
 
