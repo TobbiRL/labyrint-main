@@ -47,6 +47,7 @@ const EMPTY = " ";
 const HERO = "H";
 const LOOT = "$";
 const GUARD = "X";
+const HP_POTION = "P";
 
 const DOOR = "D";
 const DOOR2 = "d";
@@ -59,7 +60,7 @@ let direction = -1;
 
 let items = [];
 
-const THINGS = [LOOT, EMPTY];
+const THINGS = [LOOT, EMPTY, HP_POTION];
 const ENEMIES = [GUARD];
 
 const LEVEL_CHANGE = [DOOR, DOOR2, DOOR3, DOOR4];
@@ -119,6 +120,11 @@ class Labyrinth {
                 let loot = Math.round(Math.random() * 7) + 3;
                 playerStats.cash += loot;
                 eventText = `Player gained ${loot}$`;
+            }
+            if (currentItem == HP_POTION) {
+                let recovery = Math.round(Math.random() * 4) + 1;
+                playerStats.hp += recovery;
+                eventText = `Player recovered ${recovery}♥︎`;
             }
 
             // Move the HERO
@@ -218,7 +224,9 @@ class Labyrinth {
                 let damage = Math.round(Math.random() * 4) + 1;
                 playerStats.hp -= damage;
                 eventText = `You defeated the guard, but took ${damage} damage`;
-            }
+           /* } else for (let i = 0; i < 2; i++) {
+                guardMovement = 
+            } */
 
             // Move the HERO
             level[playerPos.row][playerPos.col] = EMPTY;
@@ -230,11 +238,11 @@ class Labyrinth {
 
             // Make the draw function draw.
             isDirty = true;
-        } else {
+            } else {
             direction *= -1;
+            }
         }
     }
-
 
     draw() {
 
