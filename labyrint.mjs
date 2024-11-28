@@ -33,6 +33,7 @@ let pallet = {
     "H": ANSI.COLOR.RED,
     "$": ANSI.COLOR.YELLOW,
     "B": ANSI.COLOR.GREEN,
+    "P": ANSI.COLOR.BLUE,
 }
 
 
@@ -124,7 +125,7 @@ class Labyrinth {
             if (currentItem == HP_POTION) {
                 let recovery = Math.round(Math.random() * 4) + 1;
                 playerStats.hp += recovery;
-                eventText = `Player recovered ${recovery}♥︎`;
+                eventText = `Player gained ${recovery}♥︎`;
             }
 
             // Move the HERO
