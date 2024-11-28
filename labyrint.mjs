@@ -34,6 +34,10 @@ let pallet = {
     "$": ANSI.COLOR.YELLOW,
     "B": ANSI.COLOR.GREEN,
     "P": ANSI.COLOR.BLUE,
+    "D": ANSI.COLOR.BLACK,
+    "d": ANSI.COLOR.BLACK,
+    "G": ANSI.COLOR.BLACK,
+    "g": ANSI.COLOR.BLACK,
 }
 
 
