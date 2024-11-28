@@ -46,6 +46,7 @@ let playerPos = {
 const EMPTY = " ";
 const HERO = "H";
 const LOOT = "$";
+const GUARD = "X";
 
 const DOOR = "D";
 const DOOR2 = "d";
@@ -59,6 +60,7 @@ let direction = -1;
 let items = [];
 
 const THINGS = [LOOT, EMPTY];
+const ENEMIES = [GUARD];
 
 const LEVEL_CHANGE = [DOOR, DOOR2, DOOR3, DOOR4];
 
@@ -208,6 +210,28 @@ class Labyrinth {
             isDirty = true
 
             eventText = `*Teleporter noise*`;
+        }
+        if (ENEMIES.includes(level[tRow][tcol])) { // Is there anything where Hero is moving to
+
+            let currentEnemy = level[tRow][tcol];
+            if (currentEnemy == GUARD) {
+                let damage = Math.round(Math.random() * 4) + 1;
+                playerStats.hp -= damage;
+                eventText = `You defeated the guard, but took ${damage} damage`;
+            }
+
+            // Move the HERO
+            level[playerPos.row][playerPos.col] = EMPTY;
+            level[tRow][tcol] = HERO;
+
+            // Update the HERO
+            playerPos.row = tRow;
+            playerPos.col = tcol;
+
+            // Make the draw function draw.
+            isDirty = true;
+        } else {
+            direction *= -1;
         }
     }
 
