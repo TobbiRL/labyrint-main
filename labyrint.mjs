@@ -17,6 +17,7 @@ const CHAR = {
     hero: "H",
     loot: "$",
     guard: "X",
+    boss: "B",
     hp_potion: "P",
     door: {
         one: "D",
@@ -30,7 +31,7 @@ const CHAR = {
 }
 const GAME_OBJECTS = {
     things: [CHAR.loot, CHAR.space, CHAR.hp_potion],
-    enemies: [CHAR.guard],
+    enemies: [CHAR.guard, CHAR.boss],
     levelChange: [CHAR.door.one, CHAR.door.two, CHAR.door.three, CHAR.door.four],
     transportation: [CHAR.teleporter],
     hpMax: 10,
@@ -49,6 +50,7 @@ const EVENT_TEXT = {
         heart: `♥︎`,
     },
     defeatGuard: `You defeated the guard, but took `,
+    defeatBoss: `You defeated the BOSS, but took `,
     damage: ` damage`,
 }
 
@@ -160,6 +162,7 @@ class Labyrinth {
             eventText = EVENT_TEXT.teleported;
         }
 
+       
         let xRow = 0;
         let xCol = 0;
 
@@ -172,32 +175,19 @@ class Labyrinth {
             if (currentEnemy == CHAR.guard) {
                 level[enemyPos.row][enemyPos.col] = CHAR.space;
                 level[nRow][nCol] = CHAR.guard;
-                    if (enemyPos.row == null) {
-                        for (let row = 0; row < level.length; row++) {
-                            for (let col = 0; col < level[row].length; col++) {
-                            if (level[row][col] == CHAR.guard) {
-                                enemyPos.row = row;
-                                enemyPos.col = col;
-                                break;
-                            }
-                        }
-                            if (enemyPos.row != undefined) {
-                                break;
-                            }
-                             for (let i = 0; i < 3; i++) {
-                            xRow = i
-                            } if (i = 2) {
-                            for (let i = 2; i > -3; i--) {
-                                xRow = i;
-                            }
-                            } else if (i = -2) {
-                            for (let i = -2; i < 3; i++)
-                                xRow = i;
-                            }
-                            isDirty = true;
-                        }
-                    }
-            isDirty = true;
+                identifyEnemy(CHAR.guard);
+               
+                for (let i = 0; i < 3; i++) {
+                xRow = i
+                } if (i = 2) {
+                for (let i = 2; i > -3; i--) {
+                    xRow = i;
+                }
+                } else if (i = -2) {
+                for (let i = -2; i < 3; i++)
+                    xRow = i;
+                }
+                isDirty = true;
             }
         }
 
@@ -206,10 +196,12 @@ class Labyrinth {
             
             let currentEnemy = level[tRow][tcol];
             if (currentEnemy == CHAR.guard) {
-
                 guardDamage(tRow, tcol);
-        
-            } else {
+            } 
+            else if (currentEnemy == CHAR.boss) {
+                bossDamage(tRow, tcol);
+            }
+            else {
             direction *= -1;
             }
         }
@@ -246,6 +238,23 @@ class Labyrinth {
         if (eventText != CHAR.empty) {
             console.log(eventText);
             eventText = CHAR.empty;
+        }
+    }
+}
+
+function identifyEnemy(enemyID) {
+    if (enemyPos.row == null) {
+        for (let row = 0; row < level.length; row++) {
+            for (let col = 0; col < level[row].length; col++) {
+                if (level[row][col] == enemyID) {
+                    enemyPos.row = row;
+                    enemyPos.col = col;
+                    break;
+                }
+            }
+            if (enemyPos != undefined) {
+                break;
+            }
         }
     }
 }
@@ -316,6 +325,20 @@ function guardDamage(tRow, tcol) {
     playerPos.row = tRow;
     playerPos.col = tcol;
 
+
+    isDirty = true;
+}
+
+function bossDamage(tRow, tcol) {
+    let damage = Math.round(Math.random() * 4) + 2;
+    playerStats.hp -= damage;
+    eventText = EVENT_TEXT.defeatBoss + damage + EVENT_TEXT.damage;
+
+    level[playerPos.row][playerPos.col] = CHAR.space;
+    level[tRow][tcol] = CHAR.hero;
+
+    playerPos.row = tRow;
+    playerPos.col = tcol;
 
     isDirty = true;
 }
