@@ -3,12 +3,14 @@ import KeyBoardManager from "./utils/KeyBoardManager.mjs";
 import { readMapFile, readRecordFile } from "./utils/fileHelpers.mjs";
 import * as CONST from "./constants.mjs";
 
-const startingLevel = CONST.START_LEVEL_ID;
-const startingLevelReEntry = CONST.START_LEVEL_RE_ENTRY_ID;
-const secondLevel = CONST.SECOND_LEVEL_ID;
-const secondLevelReEntry = CONST.SECOND_LEVEL_RE_ENTRY_ID;
-const thirdLevel = CONST.THIRD_LEVEL_ID;
-const levels = loadLevelListings();
+const LEVEL_ID = {
+        startingLevel: CONST.START_LEVEL_ID,
+        startingLevelReEntry: CONST.START_LEVEL_RE_ENTRY_ID,
+        secondLevel: CONST.SECOND_LEVEL_ID,
+        secondLevelReEntry: CONST.SECOND_LEVEL_RE_ENTRY_ID,
+        thirdLevel: CONST.THIRD_LEVEL_ID,
+        levels: loadLevelListings(),
+}
 const CHAR = {
     space: " ",
     empty: "",
@@ -26,12 +28,13 @@ const CHAR = {
     itemSplit: ":",
 
 }
-const THINGS = [CHAR.loot, CHAR.space, CHAR.hp_potion];
-const ENEMIES = [CHAR.guard];
-const LEVEL_CHANGE = [CHAR.door.one, CHAR.door.two, CHAR.door.three, CHAR.door.four];
-const TRANSPORTATION = [CHAR.teleporter];
-const HP_MAX = 10;
-
+const GAME_OBJECTS = {
+    things: [CHAR.loot, CHAR.space, CHAR.hp_potion],
+    enemies: [CHAR.guard],
+    levelChange: [CHAR.door.one, CHAR.door.two, CHAR.door.three, CHAR.door.four],
+    transportation: [CHAR.teleporter],
+    hpMax: 10,
+}
 const playerStats = {
     hp: 10,
     cash: 0
@@ -49,7 +52,7 @@ const EVENT_TEXT = {
     damage: ` damage`,
 }
 
-let levelData = readMapFile(levels[startingLevel]);
+let levelData = readMapFile(LEVEL_ID.levels[LEVEL_ID.startingLevel]);
 let level = levelData;
 let pallet = {
     "█": ANSI.COLOR.LIGHT_GRAY,
@@ -98,7 +101,7 @@ class Labyrinth {
         let tRow = playerPos.row + (1 * drow);
         let tcol = playerPos.col + (1 * dcol);
 
-        if (THINGS.includes(level[tRow][tcol])) {
+        if (GAME_OBJECTS.things.includes(level[tRow][tcol])) {
 
             let currentItem = level[tRow][tcol];
             if (currentItem == CHAR.loot) {
@@ -123,23 +126,23 @@ class Labyrinth {
             direction *= -1;
         }
 
-        if (LEVEL_CHANGE.includes(level[tRow][tcol])) {
+        if (GAME_OBJECTS.levelChange.includes(level[tRow][tcol])) {
             
             let doorSymbol = level[tRow][tcol];
             if (doorSymbol == CHAR.door.one) {
-                changeLevelTo(secondLevel);
+                changeLevelTo(LEVEL_ID.secondLevel);
                 eventText = EVENT_TEXT.door;
             } 
             else if (doorSymbol == CHAR.door.two) {
-                changeLevelTo(startingLevelReEntry);
+                changeLevelTo(LEVEL_ID.startingLevelReEntry);
                 eventText = EVENT_TEXT.door;
             }
             else if (doorSymbol == CHAR.door.three) {
-                changeLevelTo(thirdLevel);
+                changeLevelTo(LEVEL_ID.thirdLevel);
                 eventText = EVENT_TEXT.gate;
             }
             else if (doorSymbol == CHAR.door.four) {
-                changeLevelTo(secondLevelReEntry);
+                changeLevelTo(LEVEL_ID.secondLevelReEntry);
                 eventText = EVENT_TEXT.gate;
             }
             
@@ -152,7 +155,7 @@ class Labyrinth {
             isDirty = true;
         }
 
-        if (TRANSPORTATION.includes(level[tRow][tcol])) {
+        if (GAME_OBJECTS.transportation.includes(level[tRow][tcol])) {
             let transporter = level[tRow][tcol];
             if (transporter == CHAR.teleporter) {
                 teleportPlayer(tRow, tcol); 
@@ -170,7 +173,7 @@ class Labyrinth {
         let nCol = enemyPos.col + (1 * xCol);
 
 
-        if (ENEMIES.includes(level[nRow][nCol])) {
+        if (GAME_OBJECTS.enemies.includes(level[nRow][nCol])) {
             let currentEnemy = level[nRow][nCol];
             if (currentEnemy == CHAR.guard) {
                 level[enemyPos.row][enemyPos.col] = CHAR.space;
@@ -199,7 +202,7 @@ class Labyrinth {
         }
 
 
-        if (ENEMIES.includes(level[tRow][tcol])) { 
+        if (GAME_OBJECTS.enemies.includes(level[tRow][tcol])) { 
             
             let currentEnemy = level[tRow][tcol];
             if (currentEnemy == CHAR.guard) {
@@ -262,7 +265,7 @@ function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
 }
 
 function changeLevelTo(enterLevel) {
-    levelData = readMapFile(levels[enterLevel]);
+    levelData = readMapFile(LEVEL_ID.levels[enterLevel]);
     level = levelData;
 }
 
@@ -323,7 +326,7 @@ function identifyPlayer() {
 }
 
 function renderHud() {
-    let hpBar = `Life:[${ANSI.COLOR.RED + pad(playerStats.hp, EVENT_TEXT.loot.heart) + ANSI.COLOR_RESET}${ANSI.COLOR.LIGHT_GRAY + pad(HP_MAX - playerStats.hp, EVENT_TEXT.loot.heart) + ANSI.COLOR_RESET}]`
+    let hpBar = `Life:[${ANSI.COLOR.RED + pad(playerStats.hp, EVENT_TEXT.loot.heart) + ANSI.COLOR_RESET}${ANSI.COLOR.LIGHT_GRAY + pad(GAME_OBJECTS.hpMax - playerStats.hp, EVENT_TEXT.loot.heart) + ANSI.COLOR_RESET}]`
     let cash = `$:${playerStats.cash}`;
     return `${hpBar} ${cash}\n`;
 }
