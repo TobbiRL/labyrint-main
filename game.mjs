@@ -1,5 +1,6 @@
 import Labyrinth from "./labyrint.mjs"
-import ANSI from "./utils/ANSI.mjs";
+import { ANSI } from "./utils/ANSI.mjs";
+import SplashScreen from "./splashScreen.mjs";
 
 const REFRESH_RATE = 250;
 
@@ -9,10 +10,12 @@ let intervalID = null;
 let isBlocked = false;
 let state = null;
 
+
 function init() {
-    //All levels available to the game. 
+    //All levels available to the game.
     state = new Labyrinth();
     intervalID = setInterval(update, REFRESH_RATE);
+
 }
 
 function update() {

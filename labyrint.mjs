@@ -1,4 +1,4 @@
-import ANSI from "./utils/ANSI.mjs";
+import { ANSI } from "./utils/ANSI.mjs";
 import KeyBoardManager from "./utils/KeyBoardManager.mjs";
 import { readMapFile, readRecordFile } from "./utils/fileHelpers.mjs";
 import * as CONST from "./constants.mjs";
@@ -30,14 +30,15 @@ let level = levelData;
 
 let pallet = {
     "█": ANSI.COLOR.LIGHT_GRAY,
-    "H": ANSI.COLOR.RED,
+    "H": ANSI.COLOR.GREEN,
     "$": ANSI.COLOR.YELLOW,
-    "B": ANSI.COLOR.GREEN,
-    "P": ANSI.COLOR.BLUE,
+    "B": ANSI.COLOR.BLUE,
+    "P": ANSI.COLOR.YELLOW,
     "D": ANSI.COLOR.BLACK,
     "d": ANSI.COLOR.BLACK,
     "G": ANSI.COLOR.BLACK,
     "g": ANSI.COLOR.BLACK,
+    "X": ANSI.COLOR.RED,
 }
 
 
@@ -127,7 +128,7 @@ class Labyrinth {
                 eventText = `Player gained ${loot}$`;
             }
             if (currentItem == HP_POTION) {
-                let recovery = Math.round(Math.random() * 4) + 1;
+                let recovery = Math.round(Math.random() * 4) + 2;
                 playerStats.hp += recovery;
                 eventText = `Player gained ${recovery}♥︎`;
             }
@@ -222,27 +223,27 @@ class Labyrinth {
 
             eventText = `*Teleporter noise*`;
         }
-        if (ENEMIES.includes(level[tRow][tcol])) { // Is there anything where Hero is moving to
-
+        if (ENEMIES.includes(level[tRow][tcol])) { 
+            
             let currentEnemy = level[tRow][tcol];
             if (currentEnemy == GUARD) {
-                let damage = Math.round(Math.random() * 4) + 1;
+            
+                
+                
+
+                let damage = Math.round(Math.random() * 3) + 1;
                 playerStats.hp -= damage;
                 eventText = `You defeated the guard, but took ${damage} damage`;
-           /* } else for (let i = 0; i < 2; i++) {
-                guardMovement = 
-            } */
-
-            // Move the HERO
+            
             level[playerPos.row][playerPos.col] = EMPTY;
             level[tRow][tcol] = HERO;
 
-            // Update the HERO
             playerPos.row = tRow;
             playerPos.col = tcol;
 
-            // Make the draw function draw.
+            
             isDirty = true;
+        
             } else {
             direction *= -1;
             }
