@@ -176,21 +176,27 @@ class Labyrinth {
                         for (let row = 0; row < level.length; row++) {
                             for (let col = 0; col < level[row].length; col++) {
                             if (level[row][col] == CHAR.guard) {
-
                                 enemyPos.row = row;
                                 enemyPos.col = col;
                                 break;
                             }
-                            }
+                        }
                             if (enemyPos.row != undefined) {
                                 break;
                             }
+                             for (let i = 0; i < 3; i++) {
+                            xRow = i
+                            } if (i = 2) {
+                            for (let i = 2; i > -3; i--) {
+                                xRow = i;
+                            }
+                            } else if (i = -2) {
+                            for (let i = -2; i < 3; i++)
+                                xRow = i;
+                            }
+                            isDirty = true;
                         }
-                        for (let i = 0; i < 3; i++) {
-                        xRow = i
-                        isDirty = true;
-                        }
-                    }  
+                    }
             isDirty = true;
             }
         }
