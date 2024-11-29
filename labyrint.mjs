@@ -9,73 +9,33 @@ const secondLevel = CONST.SECOND_LEVEL_ID;
 const secondLevelReEntry = CONST.SECOND_LEVEL_RE_ENTRY_ID;
 const thirdLevel = CONST.THIRD_LEVEL_ID;
 const levels = loadLevelListings();
-
-function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
-    let data = readRecordFile(source);
-    let levels = {};
-    for (const item of data) {
-        let keyValue = item.split(":");
-        if (keyValue.length >= 2) {
-            let key = keyValue[0];
-            let value = keyValue[1];
-            levels[key] = value;
-        }
-    }
-    return levels;
-}
-
-let levelData = readMapFile(levels[startingLevel]);
-let level = levelData;
-
-let pallet = {
-    "█": ANSI.COLOR.LIGHT_GRAY,
-    "H": ANSI.COLOR.GREEN,
-    "$": ANSI.COLOR.YELLOW,
-    "B": ANSI.COLOR.RED,
-    "P": ANSI.COLOR.YELLOW,
-    "D": ANSI.COLOR.BLACK,
-    "d": ANSI.COLOR.BLACK,
-    "G": ANSI.COLOR.BLACK,
-    "g": ANSI.COLOR.BLACK,
-    "X": ANSI.COLOR.RED,
-}
-
-let isDirty = true;
-
-let playerPos = {
-    row: null,
-    col: null,
-}
-
-let enemyPos = {
-    row: null,
-    col: null,
-}
-
 const CHAR = {
-    empty: " ",
+    space: " ",
+    empty: "",
     hero: "H",
     loot: "$",
     guard: "X",
     hp_potion: "P",
+    door: {
+        one: "D",
+        two: "d",
+        three: "G",
+        four: "g",
+    },
+    teleporter: "T",
+    itemSplit: ":",
+
 }
-
-const DOOR = "D";
-const DOOR2 = "d";
-const DOOR3 = "G";
-const DOOR4 = "g";
-const TELEPORTER = "T";
-
-let direction = -1;
-
-let items = [];
-
-const THINGS = [CHAR.loot, CHAR.empty, CHAR.hp_potion];
+const THINGS = [CHAR.loot, CHAR.space, CHAR.hp_potion];
 const ENEMIES = [CHAR.guard];
-const LEVEL_CHANGE = [DOOR, DOOR2, DOOR3, DOOR4];
-const TRANSPORTATION = [TELEPORTER];
+const LEVEL_CHANGE = [CHAR.door.one, CHAR.door.two, CHAR.door.three, CHAR.door.four];
+const TRANSPORTATION = [CHAR.teleporter];
+const HP_MAX = 10;
 
-let eventText = "";
+const playerStats = {
+    hp: 10,
+    cash: 0
+}
 const EVENT_TEXT = {
     gate: `You entered a gate!`,
     door: `You entered a door!`,
@@ -89,13 +49,31 @@ const EVENT_TEXT = {
     damage: ` damage`,
 }
 
-const HP_MAX = 10;
-
-const playerStats = {
-    hp: 10,
-    cash: 0
+let levelData = readMapFile(levels[startingLevel]);
+let level = levelData;
+let pallet = {
+    "█": ANSI.COLOR.LIGHT_GRAY,
+    "H": ANSI.COLOR.GREEN,
+    "$": ANSI.COLOR.YELLOW,
+    "B": ANSI.COLOR.RED,
+    "P": ANSI.COLOR.YELLOW,
+    "D": ANSI.COLOR.BLACK,
+    "d": ANSI.COLOR.BLACK,
+    "G": ANSI.COLOR.BLACK,
+    "g": ANSI.COLOR.BLACK,
+    "X": ANSI.COLOR.RED,
 }
-
+let isDirty = true;
+let playerPos = {
+    row: null,
+    col: null,
+}
+let enemyPos = {
+    row: null,
+    col: null,
+}
+let direction = -1;
+let eventText = CHAR.empty;
 class Labyrinth {
 
     update() {
@@ -120,7 +98,7 @@ class Labyrinth {
         let tRow = playerPos.row + (1 * drow);
         let tcol = playerPos.col + (1 * dcol);
 
-        if (THINGS.includes(level[tRow][tcol])) { // Is there anything where Hero is moving to
+        if (THINGS.includes(level[tRow][tcol])) {
 
             let currentItem = level[tRow][tcol];
             if (currentItem == CHAR.loot) {
@@ -134,15 +112,12 @@ class Labyrinth {
                 eventText = EVENT_TEXT.playerGained + recovery + EVENT_TEXT.loot.heart;
             }
 
-            // Move the HERO
-            level[playerPos.row][playerPos.col] = CHAR.empty;
+            level[playerPos.row][playerPos.col] = CHAR.space;
             level[tRow][tcol] = CHAR.hero;
 
-            // Update the HERO
             playerPos.row = tRow;
             playerPos.col = tcol;
 
-            // Make the draw function draw.
             isDirty = true;
         } else {
             direction *= -1;
@@ -151,19 +126,19 @@ class Labyrinth {
         if (LEVEL_CHANGE.includes(level[tRow][tcol])) {
             
             let doorSymbol = level[tRow][tcol];
-            if (doorSymbol == DOOR) {
+            if (doorSymbol == CHAR.door.one) {
                 changeLevelTo(secondLevel);
                 eventText = EVENT_TEXT.door;
             } 
-            else if (doorSymbol == DOOR2) {
+            else if (doorSymbol == CHAR.door.two) {
                 changeLevelTo(startingLevelReEntry);
                 eventText = EVENT_TEXT.door;
             }
-            else if (doorSymbol == DOOR3) {
+            else if (doorSymbol == CHAR.door.three) {
                 changeLevelTo(thirdLevel);
                 eventText = EVENT_TEXT.gate;
             }
-            else if (doorSymbol == DOOR4) {
+            else if (doorSymbol == CHAR.door.four) {
                 changeLevelTo(secondLevelReEntry);
                 eventText = EVENT_TEXT.gate;
             }
@@ -179,7 +154,7 @@ class Labyrinth {
 
         if (TRANSPORTATION.includes(level[tRow][tcol])) {
             let transporter = level[tRow][tcol];
-            if (transporter == TELEPORTER) {
+            if (transporter == CHAR.teleporter) {
                 teleportPlayer(tRow, tcol); 
             }
             
@@ -198,7 +173,7 @@ class Labyrinth {
         if (ENEMIES.includes(level[nRow][nCol])) {
             let currentEnemy = level[nRow][nCol];
             if (currentEnemy == CHAR.guard) {
-                level[enemyPos.row][enemyPos.col] = CHAR.empty;
+                level[enemyPos.row][enemyPos.col] = CHAR.space;
                 level[nRow][nCol] = CHAR.guard;
                     if (enemyPos.row == null) {
                         for (let row = 0; row < level.length; row++) {
@@ -246,7 +221,7 @@ class Labyrinth {
 
         console.log(ANSI.CLEAR_SCREEN, ANSI.CURSOR_HOME);
 
-        let rendring = "";
+        let rendring = CHAR.empty;
 
         rendring += renderHud();
 
@@ -265,11 +240,25 @@ class Labyrinth {
         }
 
         console.log(rendring);
-        if (eventText != "") {
+        if (eventText != CHAR.empty) {
             console.log(eventText);
-            eventText = "";
+            eventText = CHAR.empty;
         }
     }
+}
+
+function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {
+    let data = readRecordFile(source);
+    let levels = {};
+    for (const item of data) {
+        let keyValue = item.split(":");
+        if (keyValue.length >= 2) {
+            let key = keyValue[0];
+            let value = keyValue[1];
+            levels[key] = value;
+        }
+    }
+    return levels;
 }
 
 function changeLevelTo(enterLevel) {
@@ -278,14 +267,14 @@ function changeLevelTo(enterLevel) {
 }
 
 function teleportPlayer(tRow, tcol) {
-    level[playerPos.row][playerPos.col] = CHAR.empty;
-    level[tRow][tcol] = CHAR.empty;
+    level[playerPos.row][playerPos.col] = CHAR.space;
+    level[tRow][tcol] = CHAR.space;
     playerPos.row = null;
 
     if (playerPos.row == null) {
         for (let row = 0; row < level.length; row++) {
             for (let col = 0; col < level[row].length; col++) {
-                if (level[row][col] == TELEPORTER) {
+                if (level[row][col] == CHAR.teleporter) {
 
                     level[row][col] = CHAR.hero;
                     playerPos.row = row;
@@ -306,7 +295,7 @@ function guardDamage(tRow, tcol) {
     playerStats.hp -= damage;
     eventText = EVENT_TEXT.defeatGuard + damage + EVENT_TEXT.damage;
 
-    level[playerPos.row][playerPos.col] = CHAR.empty;
+    level[playerPos.row][playerPos.col] = CHAR.space;
     level[tRow][tcol] = CHAR.hero;
 
     playerPos.row = tRow;
@@ -340,12 +329,11 @@ function renderHud() {
 }
 
 function pad(len, text) {
-    let output = "";
+    let output = CHAR.empty;
     for (let i = 0; i < len; i++) {
         output += text;
     }
     return output;
 }
-
 
 export default Labyrinth;
