@@ -40,7 +40,6 @@ let pallet = {
     "X": ANSI.COLOR.RED,
 }
 
-
 let isDirty = true;
 
 let playerPos = {
@@ -53,11 +52,14 @@ let enemyPos = {
     col: null,
 }
 
-const EMPTY = " ";
-const HERO = "H";
-const LOOT = "$";
-const GUARD = "X";
-const HP_POTION = "P";
+const CHAR = {
+    empty: " ",
+    hero: "H",
+    loot: "$",
+    guard: "X",
+    hp_potion: "P",
+}
+
 const DOOR = "D";
 const DOOR2 = "d";
 const DOOR3 = "G";
@@ -68,12 +70,24 @@ let direction = -1;
 
 let items = [];
 
-const THINGS = [LOOT, EMPTY, HP_POTION];
-const ENEMIES = [GUARD];
+const THINGS = [CHAR.loot, CHAR.empty, CHAR.hp_potion];
+const ENEMIES = [CHAR.guard];
 const LEVEL_CHANGE = [DOOR, DOOR2, DOOR3, DOOR4];
 const TRANSPORTATION = [TELEPORTER];
 
 let eventText = "";
+const EVENT_TEXT = {
+    gate: `You entered a gate!`,
+    door: `You entered a door!`,
+    teleported: `*Teleporter noise*`,
+    playerGained: `Player gained `,
+    loot: {
+        money: `$`,
+        heart: `♥︎`,
+    },
+    defeatGuard: `You defeated the guard, but took `,
+    damage: ` damage`,
+}
 
 const HP_MAX = 10;
 
@@ -86,20 +100,7 @@ class Labyrinth {
 
     update() {
 
-        if (playerPos.row == null) {
-            for (let row = 0; row < level.length; row++) {
-                for (let col = 0; col < level[row].length; col++) {
-                    if (level[row][col] == HERO) {
-                        playerPos.row = row;
-                        playerPos.col = col;
-                        break;
-                    }
-                }
-                if (playerPos.row != undefined) {
-                    break;
-                }
-            }
-        }
+        identifyPlayer();
 
         let drow = 0;
         let dcol = 0;
@@ -122,20 +123,20 @@ class Labyrinth {
         if (THINGS.includes(level[tRow][tcol])) { // Is there anything where Hero is moving to
 
             let currentItem = level[tRow][tcol];
-            if (currentItem == LOOT) {
+            if (currentItem == CHAR.loot) {
                 let loot = Math.round(Math.random() * 7) + 3;
                 playerStats.cash += loot;
-                eventText = `Player gained ${loot}$`;
+                eventText = EVENT_TEXT.playerGained + loot + EVENT_TEXT.loot.money;
             }
-            if (currentItem == HP_POTION) {
+            if (currentItem == CHAR.hp_potion) {
                 let recovery = Math.round(Math.random() * 4) + 2;
                 playerStats.hp += recovery;
-                eventText = `Player gained ${recovery}♥︎`;
+                eventText = EVENT_TEXT.playerGained + recovery + EVENT_TEXT.loot.heart;
             }
 
             // Move the HERO
-            level[playerPos.row][playerPos.col] = EMPTY;
-            level[tRow][tcol] = HERO;
+            level[playerPos.row][playerPos.col] = CHAR.empty;
+            level[tRow][tcol] = CHAR.hero;
 
             // Update the HERO
             playerPos.row = tRow;
@@ -151,44 +152,27 @@ class Labyrinth {
             
             let doorSymbol = level[tRow][tcol];
             if (doorSymbol == DOOR) {
-                levelData = readMapFile(levels[secondLevel]);
-                level = levelData;
-                eventText = `You entered a door!`;
+                changeLevelTo(secondLevel);
+                eventText = EVENT_TEXT.door;
             } 
             else if (doorSymbol == DOOR2) {
-                levelData = readMapFile(levels[startingLevelReEntry]);
-                level = levelData;
-                eventText = `You entered a door!`;
+                changeLevelTo(startingLevelReEntry);
+                eventText = EVENT_TEXT.door;
             }
             else if (doorSymbol == DOOR3) {
-                levelData = readMapFile(levels[thirdLevel]);
-                level = levelData;
-                eventText = `You entered a gate!`;
+                changeLevelTo(thirdLevel);
+                eventText = EVENT_TEXT.gate;
             }
             else if (doorSymbol == DOOR4) {
-                levelData = readMapFile(levels[secondLevelReEntry]);
-                level = levelData;
-                eventText = `You entered a gate!`;
+                changeLevelTo(secondLevelReEntry);
+                eventText = EVENT_TEXT.gate;
             }
             
             playerPos.row = null;
             drow = 0;
             dcol = 0; 
 
-            if (playerPos.row == null) {
-                for (let row = 0; row < level.length; row++) {
-                    for (let col = 0; col < level[row].length; col++) {
-                        if (level[row][col] == HERO) {
-                            playerPos.row = row;
-                            playerPos.col = col;
-                            break;
-                        }
-                    }
-                    if (playerPos.row != undefined) {
-                        break;
-                    }
-                }
-            }
+            identifyPlayer();
             
             isDirty = true;
         }
@@ -196,37 +180,16 @@ class Labyrinth {
         if (TRANSPORTATION.includes(level[tRow][tcol])) {
             let transporter = level[tRow][tcol];
             if (transporter == TELEPORTER) {
-                level[playerPos.row][playerPos.col] = EMPTY;
-                level[tRow][tcol] = EMPTY;
-                playerPos.row = null;
-                
-                if (playerPos.row == null) {
-                    for (let row = 0; row < level.length; row++) {
-                        for (let col = 0; col < level[row].length; col++) {
-                            if (level[row][col] == TELEPORTER) {
-                                
-                                level[row][col] = HERO;
-                                playerPos.row = row;
-                                playerPos.col = col;
-
-                                break;
-                            }
-                        }
-                        if (playerPos.row != undefined) {
-                            break;
-                        }
-                    }
-                } 
+                teleportPlayer(tRow, tcol); 
             }
             
             isDirty = true
 
-            eventText = `*Teleporter noise*`;
+            eventText = EVENT_TEXT.teleported;
         }
 
         let xRow = 0;
         let xCol = 0;
-
 
         let nRow = enemyPos.row + (1 * xRow);
         let nCol = enemyPos.col + (1 * xCol);
@@ -234,13 +197,13 @@ class Labyrinth {
 
         if (ENEMIES.includes(level[nRow][nCol])) {
             let currentEnemy = level[nRow][nCol];
-            if (currentEnemy == GUARD) {
-                level[enemyPos.row][enemyPos.col] = EMPTY;
-                level[nRow][nCol] = GUARD;
+            if (currentEnemy == CHAR.guard) {
+                level[enemyPos.row][enemyPos.col] = CHAR.empty;
+                level[nRow][nCol] = CHAR.guard;
                     if (enemyPos.row == null) {
                         for (let row = 0; row < level.length; row++) {
                             for (let col = 0; col < level[row].length; col++) {
-                            if (level[row][col] == GUARD) {
+                            if (level[row][col] == CHAR.guard) {
 
                                 enemyPos.row = row;
                                 enemyPos.col = col;
@@ -264,20 +227,9 @@ class Labyrinth {
         if (ENEMIES.includes(level[tRow][tcol])) { 
             
             let currentEnemy = level[tRow][tcol];
-            if (currentEnemy == GUARD) {
+            if (currentEnemy == CHAR.guard) {
 
-                let damage = Math.round(Math.random() * 3) + 1;
-                playerStats.hp -= damage;
-                eventText = `You defeated the guard, but took ${damage} damage`;
-            
-            level[playerPos.row][playerPos.col] = EMPTY;
-            level[tRow][tcol] = HERO;
-
-            playerPos.row = tRow;
-            playerPos.col = tcol;
-
-            
-            isDirty = true;
+                guardDamage(tRow, tcol);
         
             } else {
             direction *= -1;
@@ -320,8 +272,69 @@ class Labyrinth {
     }
 }
 
+function changeLevelTo(enterLevel) {
+    levelData = readMapFile(levels[enterLevel]);
+    level = levelData;
+}
+
+function teleportPlayer(tRow, tcol) {
+    level[playerPos.row][playerPos.col] = CHAR.empty;
+    level[tRow][tcol] = CHAR.empty;
+    playerPos.row = null;
+
+    if (playerPos.row == null) {
+        for (let row = 0; row < level.length; row++) {
+            for (let col = 0; col < level[row].length; col++) {
+                if (level[row][col] == TELEPORTER) {
+
+                    level[row][col] = CHAR.hero;
+                    playerPos.row = row;
+                    playerPos.col = col;
+
+                    break;
+                }
+            }
+            if (playerPos.row != undefined) {
+                break;
+            }
+        }
+    }
+}
+
+function guardDamage(tRow, tcol) {
+    let damage = Math.round(Math.random() * 3) + 1;
+    playerStats.hp -= damage;
+    eventText = EVENT_TEXT.defeatGuard + damage + EVENT_TEXT.damage;
+
+    level[playerPos.row][playerPos.col] = CHAR.empty;
+    level[tRow][tcol] = CHAR.hero;
+
+    playerPos.row = tRow;
+    playerPos.col = tcol;
+
+
+    isDirty = true;
+}
+
+function identifyPlayer() {
+    if (playerPos.row == null) {
+        for (let row = 0; row < level.length; row++) {
+            for (let col = 0; col < level[row].length; col++) {
+                if (level[row][col] == CHAR.hero) {
+                    playerPos.row = row;
+                    playerPos.col = col;
+                    break;
+                }
+            }
+            if (playerPos.row != undefined) {
+                break;
+            }
+        }
+    }
+}
+
 function renderHud() {
-    let hpBar = `Life:[${ANSI.COLOR.RED + pad(playerStats.hp, "♥︎") + ANSI.COLOR_RESET}${ANSI.COLOR.LIGHT_GRAY + pad(HP_MAX - playerStats.hp, "♥︎") + ANSI.COLOR_RESET}]`
+    let hpBar = `Life:[${ANSI.COLOR.RED + pad(playerStats.hp, EVENT_TEXT.loot.heart) + ANSI.COLOR_RESET}${ANSI.COLOR.LIGHT_GRAY + pad(HP_MAX - playerStats.hp, EVENT_TEXT.loot.heart) + ANSI.COLOR_RESET}]`
     let cash = `$:${playerStats.cash}`;
     return `${hpBar} ${cash}\n`;
 }
