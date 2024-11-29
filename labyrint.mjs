@@ -58,12 +58,10 @@ const HERO = "H";
 const LOOT = "$";
 const GUARD = "X";
 const HP_POTION = "P";
-
 const DOOR = "D";
 const DOOR2 = "d";
 const DOOR3 = "G";
 const DOOR4 = "g";
-
 const TELEPORTER = "T";
 
 let direction = -1;
@@ -72,9 +70,7 @@ let items = [];
 
 const THINGS = [LOOT, EMPTY, HP_POTION];
 const ENEMIES = [GUARD];
-
 const LEVEL_CHANGE = [DOOR, DOOR2, DOOR3, DOOR4];
-
 const TRANSPORTATION = [TELEPORTER];
 
 let eventText = "";
@@ -230,8 +226,39 @@ class Labyrinth {
 
         let xRow = 0;
         let xCol = 0;
-        let nRow = enemyPos.row + (1 * drow);
-        let ncol = enemyPos.col + (1 * dcol);
+
+
+        let nRow = enemyPos.row + (1 * xRow);
+        let nCol = enemyPos.col + (1 * xCol);
+
+
+        if (ENEMIES.includes(level[nRow][nCol])) {
+            let currentEnemy = level[nRow][nCol];
+            if (currentEnemy == GUARD) {
+                level[enemyPos.row][enemyPos.col] = EMPTY;
+                level[nRow][nCol] = GUARD;
+                    if (enemyPos.row == null) {
+                        for (let row = 0; row < level.length; row++) {
+                            for (let col = 0; col < level[row].length; col++) {
+                            if (level[row][col] == GUARD) {
+
+                                enemyPos.row = row;
+                                enemyPos.col = col;
+                                break;
+                            }
+                            }
+                            if (enemyPos.row != undefined) {
+                                break;
+                            }
+                        }
+                        for (let i = 0; i < 3; i++) {
+                        xRow = i
+                        isDirty = true;
+                        }
+                    }  
+            isDirty = true;
+            }
+        }
 
 
         if (ENEMIES.includes(level[tRow][tcol])) { 
