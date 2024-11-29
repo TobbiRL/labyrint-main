@@ -3,7 +3,6 @@ import KeyBoardManager from "./utils/KeyBoardManager.mjs";
 import { readMapFile, readRecordFile } from "./utils/fileHelpers.mjs";
 import * as CONST from "./constants.mjs";
 
-
 const startingLevel = CONST.START_LEVEL_ID;
 const startingLevelReEntry = CONST.START_LEVEL_RE_ENTRY_ID;
 const secondLevel = CONST.SECOND_LEVEL_ID;
@@ -32,7 +31,7 @@ let pallet = {
     "█": ANSI.COLOR.LIGHT_GRAY,
     "H": ANSI.COLOR.GREEN,
     "$": ANSI.COLOR.YELLOW,
-    "B": ANSI.COLOR.BLUE,
+    "B": ANSI.COLOR.RED,
     "P": ANSI.COLOR.YELLOW,
     "D": ANSI.COLOR.BLACK,
     "d": ANSI.COLOR.BLACK,
@@ -45,6 +44,11 @@ let pallet = {
 let isDirty = true;
 
 let playerPos = {
+    row: null,
+    col: null,
+}
+
+let enemyPos = {
     row: null,
     col: null,
 }
@@ -223,13 +227,17 @@ class Labyrinth {
 
             eventText = `*Teleporter noise*`;
         }
+
+        let xRow = 0;
+        let xCol = 0;
+        let nRow = enemyPos.row + (1 * drow);
+        let ncol = enemyPos.col + (1 * dcol);
+
+
         if (ENEMIES.includes(level[tRow][tcol])) { 
             
             let currentEnemy = level[tRow][tcol];
             if (currentEnemy == GUARD) {
-            
-                
-                
 
                 let damage = Math.round(Math.random() * 3) + 1;
                 playerStats.hp -= damage;
