@@ -105,14 +105,10 @@ class Labyrinth {
 
             let currentItem = level[tRow][tcol];
             if (currentItem == CHAR.loot) {
-                let loot = Math.round(Math.random() * 7) + 3;
-                playerStats.cash += loot;
-                eventText = EVENT_TEXT.playerGained + loot + EVENT_TEXT.loot.money;
+                gainMoney();
             }
             if (currentItem == CHAR.hp_potion) {
-                let recovery = Math.round(Math.random() * 4) + 2;
-                playerStats.hp += recovery;
-                eventText = EVENT_TEXT.playerGained + recovery + EVENT_TEXT.loot.heart;
+                gainHearts();
             }
 
             level[playerPos.row][playerPos.col] = CHAR.space;
@@ -148,7 +144,7 @@ class Labyrinth {
             
             playerPos.row = null;
             drow = 0;
-            dcol = 0; 
+            dcol = 0;
 
             identifyPlayer();
             
@@ -160,9 +156,7 @@ class Labyrinth {
             if (transporter == CHAR.teleporter) {
                 teleportPlayer(tRow, tcol); 
             }
-            
             isDirty = true
-
             eventText = EVENT_TEXT.teleported;
         }
 
@@ -229,7 +223,7 @@ class Labyrinth {
         rendring += renderHud();
 
         for (let row = 0; row < level.length; row++) {
-            let rowRendering = "";
+            let rowRendering = CHAR.empty;
             for (let col = 0; col < level[row].length; col++) {
                 let symbol = level[row][col];
                 if (pallet[symbol] != undefined) {
@@ -248,6 +242,18 @@ class Labyrinth {
             eventText = CHAR.empty;
         }
     }
+}
+
+function gainHearts() {
+    let recovery = Math.round(Math.random() * 4) + 2;
+    playerStats.hp += recovery;
+    eventText = EVENT_TEXT.playerGained + recovery + EVENT_TEXT.loot.heart;
+}
+
+function gainMoney() {
+    let loot = Math.round(Math.random() * 7) + 3;
+    playerStats.cash += loot;
+    eventText = EVENT_TEXT.playerGained + loot + EVENT_TEXT.loot.money;
 }
 
 function loadLevelListings(source = CONST.LEVEL_LISTING_FILE) {

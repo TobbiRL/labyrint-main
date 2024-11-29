@@ -12,10 +12,8 @@ let state = null;
 let splash = null;
 
 function init() {
-    //All levels available to the game.
     splash = new SplashScreen();
     splash.start();
-
     setTimeout(() => {splash.stop()
     state = new Labyrinth();
     intervalID = setInterval(update, REFRESH_RATE);
