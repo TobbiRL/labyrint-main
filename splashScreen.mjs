@@ -105,9 +105,6 @@ class SplashScreen {
     }
 }
 
-const splash = new SplashScreen();
-splash.start();
 
-setTimeout(() => splash.stop(), 5000)
 
 export default SplashScreen;

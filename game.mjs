@@ -9,13 +9,17 @@ console.log(ANSI.RESET, ANSI.CLEAR_SCREEN, ANSI.HIDE_CURSOR);
 let intervalID = null;
 let isBlocked = false;
 let state = null;
-
+let splash = null;
 
 function init() {
     //All levels available to the game.
+    splash = new SplashScreen();
+    splash.start();
+
+    setTimeout(() => {splash.stop()
     state = new Labyrinth();
     intervalID = setInterval(update, REFRESH_RATE);
-
+}, 5000)
 }
 
 function update() {
